@@ -1,0 +1,31 @@
+<launch>
+  <!-- bag的地址与名称
+  <arg name="bag_filename" default="$(env HOME)/bagfiles/rslidar-outdoor-gps-notf.bag"/> -->
+  <!-- pbstream的地址与名称 -->
+  <arg name="load_state_filename" default="$(env HOME)/carto_ws/map/2d-2.pbstream"/>
+
+  <!-- 使用bag的时间戳 -->
+  <param name="/use_sim_time" value="false" />
+
+  <!-- 启动cartographer -->
+  <node name="cartographer_node" pkg="cartographer_ros"
+      type="cartographer_node" args="
+          -configuration_directory $(find cartographer_ros)/configuration_files
+          -configuration_basename my_robot_pure_localization.lua
+          -load_state_filename $(arg load_state_filename)"
+      output="screen">
+      <remap from="scan" to="/scan" />
+      <remap from="odom" to="/odom" />
+  </node>
+
+  <!-- 启动map_server -->
+  <!-- 
+  <node name="map_server" pkg="map_server" type="map_server"
+      args="$(env HOME)/carto_ws/map/2d-1.yaml" /> 
+  -->
+
+  <!-- 启动rviz -->
+  <node name="rviz" pkg="rviz" type="rviz" required="true"
+      args="-d $(find cartographer_ros)/configuration_files/demo_2d.rviz" />
+
+</launch>
